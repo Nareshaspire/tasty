@@ -23,6 +23,20 @@ function linkAction(){
 }
 navLink.forEach(n => n.addEventListener('click', linkAction))
 
+/*==================== FAQ TOGGLE ====================*/
+function toggleFAQ(header) {
+    const faqItem = header.parentElement;
+    const isActive = faqItem.classList.contains('active');
+
+    document.querySelectorAll('.faq__item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    if (!isActive) {
+        faqItem.classList.add('active');
+    }
+}
+
 /*==================== SCROLL SECTIONS ACTIVE LINK ====================*/
 const sections = document.querySelectorAll('section[id]')
 
@@ -100,8 +114,51 @@ const sr = ScrollReveal({
 sr.reveal(`.home__data, .home__img,
             .about__data, .about__img,
             .services__content, .menu__content,
+            .testimonials__content, .gallery__content,
+            .faq__item,
             .app__data, .app__img,
             .contact__data, .contact__button,
             .footer__content`, {
     interval: 200
 })
+/*==================== CONTACT FORM SUBMISSION ====================*/
+document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const message = document.getElementById('message').value;
+    const formMessage = document.getElementById('formMessage');
+
+    try {
+        const response = await fetch('http://localhost:5000/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, message })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            formMessage.textContent = '✓ Message sent successfully! We will reply soon.';
+            formMessage.classList.add('success');
+            formMessage.classList.remove('error');
+            document.getElementById('contactForm').reset();
+        } else {
+            formMessage.textContent = '✗ Error: ' + data.error;
+            formMessage.classList.add('error');
+            formMessage.classList.remove('success');
+        }
+    } catch (error) {
+        formMessage.textContent = '✗ Failed to send message. Please try again.';
+        formMessage.classList.add('error');
+        formMessage.classList.remove('success');
+        console.error('Error:', error);
+    }
+
+    setTimeout(() => {
+        formMessage.classList.remove('success', 'error');
+    }, 5000);
+});
