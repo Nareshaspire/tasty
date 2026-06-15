@@ -33,6 +33,7 @@
                         <li class="nav__item"><a href="#testimonials" class="nav__link">Testimonials</a></li>
                         <li class="nav__item"><a href="#gallery" class="nav__link">Gallery</a></li>
                         <li class="nav__item"><a href="#faq" class="nav__link">FAQ</a></li>
+                        <li class="nav__item"><a href="#marketplace" class="nav__link">Marketplace</a></li>
                         <li class="nav__item"><a href="#contact" class="nav__link">Contact us</a></li>
 
                         <li><i class='bx bx-moon change-theme' id="theme-button"></i></li>
@@ -578,6 +579,33 @@
 
             <!--========== CONTACT US ==========-->
            <!--========== CONTACT US ==========-->
+            <section class="marketplace section bd-container" id="marketplace">
+                <div class="marketplace__container bd-grid">
+                    <div class="marketplace__data">
+                        <span class="section-subtitle marketplace__initial">Local Market</span>
+                        <h2 class="section-title marketplace__initial">Sell or Donate Homemade Food</h2>
+                        <p class="marketplace__description">Connect with nearby Sudbury neighbours to share or donate homemade meals, snacks, and baked goods.</p>
+                    </div>
+
+                    <div class="marketplace__form">
+                        <form id="listingForm" class="contact__form">
+                            <input type="text" id="listingTitle" placeholder="Listing Title" required class="contact__input">
+                            <div class="listing-type-group">
+                                <label><input type="radio" name="listingType" value="sell" checked> Sell</label>
+                                <label><input type="radio" name="listingType" value="donate"> Donate</label>
+                            </div>
+                            <textarea id="listingDescription" placeholder="Description" rows="4" required class="contact__input"></textarea>
+                            <input type="number" id="listingPrice" placeholder="Price (optional for donations)" min="0" step="0.01" class="contact__input">
+                            <input type="text" id="listingContact" placeholder="Your contact info" required class="contact__input">
+                            <input type="text" id="listingLocation" placeholder="Your Sudbury neighbourhood" required class="contact__input">
+                            <button type="submit" class="button">Post Listing</button>
+                            <p id="listingMessage" class="form-message"></p>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="listing__feed" id="listingsContainer"></div>
+            </section>
 <section class="contact section bd-container" id="contact">
     <div class="contact__container bd-grid">
         <div class="contact__data">

@@ -46,10 +46,12 @@ const transporter = nodemailer.createTransport({
 const authRoutes = require('./routes/auth');
 const orderRoutes = require('./routes/orders');
 const paymentRoutes = require('./routes/payments');
+const listingRoutes = require('./routes/listings');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/listings', listingRoutes);
 
 // Serve frontend
 app.get('/', (req, res) => {

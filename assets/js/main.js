@@ -121,6 +121,82 @@ sr.reveal(`.home__data, .home__img,
             .footer__content`, {
     interval: 200
 })
+/*==================== LOCAL MARKETPLACE LISTINGS =====================*/
+const listingForm = document.getElementById('listingForm');
+const listingsContainer = document.getElementById('listingsContainer');
+
+async function loadListings() {
+    if (!listingsContainer) return;
+
+    try {
+        const response = await fetch('/api/listings');
+        const listings = await response.json();
+
+        listingsContainer.innerHTML = listings.map(listing => `
+            <article class="listing-card ${listing.type}">
+                <div class="listing-card__header">
+                    <h3>${listing.title}</h3>
+                    <span class="listing-card__type">${listing.type === 'donate' ? 'Donate' : 'Sell'}</span>
+                </div>
+                <p class="listing-card__description">${listing.description}</p>
+                <p class="listing-card__meta"><strong>Contact:</strong> ${listing.contact}</p>
+                <p class="listing-card__meta"><strong>Location:</strong> ${listing.location}</p>
+                ${listing.type === 'sell' && listing.price ? `<p class="listing-card__price">$${listing.price.toFixed(2)}</p>` : ''}
+            </article>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading listings:', error);
+        listingsContainer.innerHTML = '<p class="listing-error">Unable to load local marketplace listings.</p>';
+    }
+}
+
+if (listingForm) {
+    listingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('listingTitle').value;
+        const type = document.querySelector('input[name="listingType"]:checked').value;
+        const description = document.getElementById('listingDescription').value;
+        const price = parseFloat(document.getElementById('listingPrice').value) || 0;
+        const contact = document.getElementById('listingContact').value;
+        const location = document.getElementById('listingLocation').value;
+        const listingMessage = document.getElementById('listingMessage');
+
+        try {
+            const response = await fetch('/api/listings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, type, description, price, contact, location })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                listingMessage.textContent = '✓ Listing posted successfully!';
+                listingMessage.classList.add('success');
+                listingMessage.classList.remove('error');
+                listingForm.reset();
+                loadListings();
+            } else {
+                listingMessage.textContent = '✗ Error: ' + data.error;
+                listingMessage.classList.add('error');
+                listingMessage.classList.remove('success');
+            }
+        } catch (error) {
+            listingMessage.textContent = '✗ Failed to post listing. Please try again.';
+            listingMessage.classList.add('error');
+            listingMessage.classList.remove('success');
+            console.error('Error:', error);
+        }
+
+        setTimeout(() => {
+            listingMessage.classList.remove('success', 'error');
+        }, 5000);
+    });
+}
+
+loadListings();
 /*==================== CONTACT FORM SUBMISSION ====================*/
 document.getElementById('contactForm').addEventListener('submit', async (e) => {
     e.preventDefault();
