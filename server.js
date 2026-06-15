@@ -2,6 +2,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 require('dotenv').config();
 
 const requiredEnv = ['EMAIL_USER', 'EMAIL_PASSWORD', 'RESTAURANT_EMAIL', 'MONGODB_URI', 'JWT_SECRET'];
@@ -16,6 +17,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Connect to MongoDB
 if (process.env.MONGODB_URI) {
@@ -48,6 +50,11 @@ const paymentRoutes = require('./routes/payments');
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
+
+// Serve frontend
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {

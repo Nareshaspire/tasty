@@ -117,10 +117,33 @@ Server running on port 5000
 
 ### Step 5: Open in Browser
 
-Open `index.html` in your browser or visit:
+Open the app in your browser at:
 ```
-http://localhost:3000
+http://localhost:5000
 ```
+
+---
+
+## 🚀 Deploying Live
+
+This app can be deployed to any Node.js hosting platform that supports environment variables.
+
+### Deploy to Render / Heroku / Railway
+1. Push your repository to GitHub.
+2. Create a new Node.js service on your hosting provider.
+3. Set these environment variables in the provider dashboard:
+   - `EMAIL_USER`
+   - `EMAIL_PASSWORD`
+   - `RESTAURANT_EMAIL`
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `STRIPE_SECRET_KEY` (optional for payments)
+4. Use the `npm start` command.
+
+### Notes for production
+- The frontend is served by the same Express server as the API.
+- The contact form now uses a relative API path (`/api/contact`), so it works in production.
+- Keep `.env` local and do not commit secrets to Git.
 
 ---
 
