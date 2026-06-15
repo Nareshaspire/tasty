@@ -1,11 +1,12 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-const requiredEnv = ['EMAIL_USER', 'EMAIL_PASSWORD', 'RESTAURANT_EMAIL'];
+const requiredEnv = ['EMAIL_USER', 'EMAIL_PASSWORD', 'RESTAURANT_EMAIL', 'MONGODB_URI', 'JWT_SECRET'];
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
-if (missingEnv.length > 0) {
+if (missingEnv.length > 0 && process.env.NODE_ENV !== 'test') {
     console.error('Missing required environment variables:', missingEnv.join(', '));
     process.exit(1);
 }
@@ -16,6 +17,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Connect to MongoDB
+if (process.env.MONGODB_URI) {
+    mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }).then(() => console.log('MongoDB connected'))
+        .catch((err) => {
+            console.error('MongoDB connection error:', err.message);
+            if (process.env.NODE_ENV !== 'test') process.exit(1);
+        });
+} else if (process.env.NODE_ENV !== 'test') {
+    console.warn('No MONGODB_URI provided; running without DB connection');
+}
+
 // Configure email service
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -24,6 +39,15 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASSWORD
     }
 });
+
+// Routes
+const authRoutes = require('./routes/auth');
+const orderRoutes = require('./routes/orders');
+const paymentRoutes = require('./routes/payments');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
@@ -75,6 +99,10 @@ app.get('/api/test', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
